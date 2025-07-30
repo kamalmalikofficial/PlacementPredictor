@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+  <title>Placement Predictor</title>
+</head>
+
+<body>
+  <div id="main_background">
+    <div id="header">
+      <h3>Placement Predictor 🧠</h3>
+    </div>
+    <div id="background">
+      <h3 id="background-heading">Plug in your credentials🔌</h3>
+      <form action="/submit" method="post">
+
+        <div class="form-group tooltip-container">
+          <label for="iq">IQ</label><br>
+          <input type="number" id="iq" name="iq" required class="tooltip-trigger" placeholder="eg.  118">
+          <div class="tooltip-box">
+
+            <br> 80+ &nbsp; &nbsp; &nbsp; Struggles with academics
+            <br> 90+ &nbsp; &nbsp; &nbsp; Can manage routine tasks
+            <br> 100+ &nbsp; &nbsp; Normal brain, average skills
+            <br> 110+ &nbsp; &nbsp; Good thinking, learns well
+            <br> 120+ &nbsp; &nbsp; Fast learner, smart ideas
+            <br> 130+ &nbsp;&nbsp; Very smart, solves fast
+            <br> 140+ &nbsp;&nbsp;   Superior mental ability
+            <br> 150+ &nbsp; &nbsp; Rare, Near-genius
+
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cgpa">Enter your CGPA</label><br>
+          <input type="number" id="cgpa" name="cgpa" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="project">Total Projects (small, large, Personal, scalable, ongoing, or incomplete)</label><br>
+          <input type="number" id="project" name="project" required>
+        </div>
+
+        <div class="form-group">
+          <label for="internex">Any Internship Experience</label><br>
+          <select id="internex" name="Any Internship Experience" required>
+            <option value="">--Select--</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
+        <button type="submit" onclick="senddata()">Submit </button>
+        <div id="after-submit-box" style="display: none; margin-top: 15px;">
+          <p id=predictor>We are processing your request... 🔄</p>
+        </div>
+      </form>
+
+    </div>
+  </div>
+  <footer>
+    <div class="panel2">
+      <div>
+
+        <p id="footer-datetime">Date & Time: <span id="datetime">--:--:---- --:--:--</span></p>
+
+
+        <p class="knw"> Disclaimer ⚠️: This tool is for educational purposes only. Placement outcomes are estimated on just
+          a Ml model and maybe not real nor guaranteed.</p>
+        <br>
+        <p class="knw"> 💡 This is a simple illustration. Any further changes or recommendations are welcome at <a
+            href="mailto:kamalmalik.krw@gmail.com">kamalmalik.krw@gmail.com</a>.</p>
+        <p>Kamalmalikofficial™.</p>
+
+
+      </div>
+
+    </div>
+  </footer>
+  <script>
+    function updateDateTime() {
+      const now = new Date();
+      const day = now.getDate();
+      const month = now.getMonth() + 1; // months are 0-indexed
+      const year = now.getFullYear();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+
+      const dateTimeString = `${day}:${month}:${year} ${hours}:${minutes}:${seconds}`;
+      document.getElementById("datetime").textContent = dateTimeString;
+    }
+
+    setInterval(updateDateTime, 1000); // update every second
+    updateDateTime(); // initial call
+  </script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      const input = document.querySelector('.tooltip-trigger');
+      const tooltip = document.querySelector('.tooltip-box');
+
+      input.addEventListener('mouseenter', function () {
+        tooltip.style.display = 'block';
+      });
+
+      input.addEventListener('mouseleave', function () {
+        tooltip.style.display = 'none';
+      });
+    });
+  </script>
+
+
+
+
+  <script>
+    function formhandler(event) {
+      event.preventDefault();
+
+      // Hide submit button
+      document.querySelector('button[type="submit"]').style.display = "none";
+
+      // Show the prediction box and set initial state
+      document.getElementById('after-submit-box').style.display = "block";
+      document.getElementById('after-submit-box').style.backgroundColor = "red";
+      document.getElementById('predictor').innerHTML = "We are processing your request... 🔄";
+
+      // Prepare form data and send to server
+      var fd = new FormData(document.querySelector('form'));
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/predict', true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          var response = xhr.responseText.trim().toLowerCase();
+
+          document.getElementById('predictor').innerHTML = "Prediction: " + response;
+
+          if (response === "yes") {
+            document.getElementById('after-submit-box').style.backgroundColor = "green";
+          } else {
+            document.getElementById('after-submit-box').style.backgroundColor = "crimson";
+          }
+        }
+      };
+
+      xhr.send(fd);
+    }
+
+    // Attach formhandler on page load
+    window.addEventListener('DOMContentLoaded', function () {
+      document.querySelector('form').addEventListener('submit', formhandler);
+    });
+  </script>
+
+
+
+
+
+
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
